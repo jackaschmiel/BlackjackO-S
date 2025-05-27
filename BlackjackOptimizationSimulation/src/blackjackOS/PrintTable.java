@@ -13,7 +13,7 @@ public class PrintTable {
 				System.out.print("   " + "Bust" + "  | ");
 			} else {    
 				System.out.print("     " + (i + 12) + "  | ");
-			}
+			} 
 			for (int j = 0; j < 6; j++) {
 				double number = playerProbs[i] * dealerProbs[j];
 				System.out.print("");
