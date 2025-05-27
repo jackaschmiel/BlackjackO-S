@@ -11,7 +11,7 @@ public class SimulationResult {
 	double gamesPerSecond;
 	double winRate;
 	double houseEdge;
-	double playerEdge;
+	double playerEdge; 
 	 
 	/* Constructor */
 	public SimulationResult(int games, int decks, int[] outcomeTotals, double secondsElapsed, 

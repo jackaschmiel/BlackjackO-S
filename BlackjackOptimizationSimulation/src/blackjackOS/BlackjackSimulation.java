@@ -12,7 +12,7 @@ import java.util.Random;
  * splitting if their first two cards are the same value, and surrendering. The methods in the 
  * BlackjackOptimization class will determine the decisions that this program makes. */
 public class BlackjackSimulation {
-	
+	 
 	public static void main(String[] args) {
 
 		// Stores the result of a simulation in an object

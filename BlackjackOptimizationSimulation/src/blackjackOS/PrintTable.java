@@ -9,7 +9,7 @@ public class PrintTable {
 		System.out.print("  Player |      17 |      18 |      19 |      20 |      21 |    Bust |   Total |");
 		System.out.println("\n--------------------------------------------------------------------------------");
 		for (int i = 0; i < 11; i++) {
-			if (i == 10) {
+			if (i == 10) { 
 				System.out.print("   " + "Bust" + "  | ");
 			} else {    
 				System.out.print("     " + (i + 12) + "  | ");

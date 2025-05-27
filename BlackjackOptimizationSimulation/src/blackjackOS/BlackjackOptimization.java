@@ -7,7 +7,7 @@ import blackjackOS.BlackjackSimulation;
  * It has 8 methods and 114 logical lines of code (LOC). */
 
 public class BlackjackOptimization {
-	
+	 
 	public static int[] idxToVal = { 10, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	
 	/* This method returns an array of the probabilities the dealer could finish with, in order by index,
