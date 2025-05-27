@@ -20,7 +20,7 @@ public class BlackjackSimulation {
 		// Prints the results of the simulation to the console
 		sim.printResults();
 		
-	} 
+	}  
 
 	
 	

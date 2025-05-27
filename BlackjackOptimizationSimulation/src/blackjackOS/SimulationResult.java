@@ -54,7 +54,7 @@ public class SimulationResult {
 		System.out.printf("House edge: %.5f percent\n", houseEdge * 100);
 		System.out.printf("Player edge: %.5f percent\n", playerEdge * 100);
 		  
-		  
+		   
 		System.out.println("\nOutcome | Proportion");
 		System.out.printf("-4      | %.10f\n", outcomeProportions[0]);
 		System.out.printf("-3      | %.10f\n", outcomeProportions[1]);

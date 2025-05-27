@@ -56,7 +56,7 @@ public class BlackjackOptimization {
 		// Loops through all of the differently valued cards for the sake of seeing the result if that card
 		// is the next card dealt to the dealer.
 		for (int idx = 0; idx < cardsLeft.length; idx++) {
-			
+			 
 			// If the dealer's first number was 10, we can assure that their down card is not ace because 
 			// they peeked for Blackjack, and if it was an ace, they would have gotten Blackjack and this
 			// method would not get called. The same goes for starting with an ace and then getting a 10 
