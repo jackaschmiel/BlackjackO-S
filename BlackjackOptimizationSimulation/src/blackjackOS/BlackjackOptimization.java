@@ -1,7 +1,5 @@
 package blackjackOS;
 
-import blackjackOS.BlackjackSimulation;
-
 /* This class consists of methods that will assist in making decisions during a Blackjack
  * in order to optimize a player's chances of winning. 
  * It has 8 methods and 114 logical lines of code (LOC). */
@@ -56,7 +54,7 @@ public class BlackjackOptimization {
 		// Loops through all of the differently valued cards for the sake of seeing the result if that card
 		// is the next card dealt to the dealer.
 		for (int idx = 0; idx < cardsLeft.length; idx++) {
-			 
+			     
 			// If the dealer's first number was 10, we can assure that their down card is not ace because 
 			// they peeked for Blackjack, and if it was an ace, they would have gotten Blackjack and this
 			// method would not get called. The same goes for starting with an ace and then getting a 10 
@@ -278,7 +276,7 @@ public class BlackjackOptimization {
 		// If the player chooses to double their bet, they cannot draw more than the one card given to
 		// them after they make this decision. The getDoubledPlayerProbs method accounts for this and
 		// this variable will store the probabilities of finishing with different values after doubling
-		double[] doubledPlayerProbs = getDoubledPlayerProbs(total, cardsLeft);
+		double[] doubledPlayerProbs = getDoubledPlayerProbs(total, acePresent, cardsLeft);
 		
 		// Stores the probability of the player winning if they choose to double
 		double winIfHitOnce = playerWinProb(doubledPlayerProbs, dealerProbs);
@@ -368,7 +366,7 @@ public class BlackjackOptimization {
 	 * The process used here is rather simple due to the impossibility of hitting again. We simply add to
 	 * the probability of ending with a certain total the probability that we draw a card that puts us at
 	 * that total. (20 logical LOC) */
-	private static double[] getDoubledPlayerProbs(int total, int[] cardsLeft) {
+	private static double[] getDoubledPlayerProbs(int total, boolean acePresent, int[] cardsLeft) {
 		
 		// Will store the probabilities
 		double[] playerProbs = new double[11];
@@ -383,13 +381,26 @@ public class BlackjackOptimization {
 			// iteration, as these could get altered during the iterations
 			int totalCopy = total;
 			
+			boolean aceCopy = acePresent;
+			
 			// Will store the value of the card added to the player's hand during this iteration. 
 			// If the card is an ace, the dealer does not yet have one, and adding 11 to the player's
 			// current total would not put it over 21, then its value is 11 and hasAce is true. Otherwise,
 			// we get the standard value for the current card being considered.
-			int currVal = (i == 1 ? 11 : idxToVal[i]);
-				
+			int currVal;
+			
+			if (i == 1 && !aceCopy && totalCopy + 11 < 22) {
+				currVal = 11;
+				aceCopy = true;
+			} else {
+				currVal = idxToVal[i]; 
+			}
+			 	
 			int newTotal = totalCopy + currVal;
+			if (newTotal > 21 && aceCopy) {
+				newTotal -= 10;
+				aceCopy = false; 
+			}
 			
 			// Stores the probability that the current card was pulled
 			double newProb = (double) cardsLeft[i] / sum;
@@ -425,9 +436,9 @@ public class BlackjackOptimization {
 		
 		// The probability of the player winning is initialized as the probability of the dealer busting
 		// minus the probability of the player also busting
-        double playerWin = dealer[5] * (1 - player[10]);
+        	double playerWin = dealer[5] * (1 - player[10]);
 		
-        // Will store the probability of a push, or tie, taking place
+        	// Will store the probability of a push, or tie, taking place
 		double pushProb = 0.0;
 		
 		// Loops through the arrays and adds to the push probability the likelihoods of the player and 
