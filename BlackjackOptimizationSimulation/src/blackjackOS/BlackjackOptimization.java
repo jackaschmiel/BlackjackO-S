@@ -1,4 +1,4 @@
-package blackjackOS;
+package blackjackOandS;
 
 /* This class consists of methods that will assist in making decisions during a Blackjack
  * in order to optimize a player's chances of winning. 
