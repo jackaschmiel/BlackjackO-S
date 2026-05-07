@@ -1,4 +1,4 @@
-package blackjackOS;
+package blackjackOandS;
 
 import java.util.Map;
 
@@ -12,15 +12,26 @@ import java.util.Random;
  * splitting if their first two cards are the same value, and surrendering. The methods in the 
  * BlackjackOptimization class will determine the decisions that this program makes. */
 public class BlackjackSimulation {
-	 
+	
 	public static void main(String[] args) {
-
-		// Stores the result of a simulation in an object
-		SimulationResult sim = simulateGames(10000, 1, 1.0);
-		// Prints the results of the simulation to the console
-		sim.printResults();
 		
-	}  
+		int simulations = Integer.parseInt(args[0]);
+		int decks = Integer.parseInt(args[1]);
+		double reshuffleRatio;
+		if (args.length == 2) {
+			reshuffleRatio = 1.0;
+		} else {
+			reshuffleRatio = Double.parseDouble(args[2]);
+		}
+		
+		SimulationResult sim = simulateGames(simulations, decks, reshuffleRatio);
+		sim.printWinRate();
+		// For more details, can also do:
+		// sim.printResults(); 
+		// Or to view only time taken to run:
+		System.out.println("Games ran per second: " + Math.round(sim.gamesPerSecond));
+		
+	}
 
 	
 	
@@ -55,6 +66,10 @@ public class BlackjackSimulation {
 		
 		// Will store how much time has elapsed since the beginning of the simulations
 		long elapsedTime = 0;
+		
+		// Stores results of games by average values of remaining cards
+		double[] totalsByAvg = new double[101];
+		int[] gamesByAvg = new int[101];
 
 		// Plays a game of Blackjack a given amount of times
 		for (int i = 0; i < games; i++) {
@@ -64,6 +79,10 @@ public class BlackjackSimulation {
 			if ((double)getSum(trueCardsLeft) < cardThreshold) {
 				trueCardsLeft = cardsAtStart.clone();
 			}
+			
+			
+			int idx = averageToIdx(trueCardsLeft);
+			gamesByAvg[idx]++;
 
 
 			// Store whether the player and the dealer will hit. Initialized as true
@@ -78,6 +97,7 @@ public class BlackjackSimulation {
 
 			// Gets the player's first card.
 			int playerFirst = hit(trueCardsLeft);
+			
 
 			// If it is an ace, as the "hit" method returns 1 for aces
 			if (playerFirst == 1) {
@@ -147,6 +167,7 @@ public class BlackjackSimulation {
 					// wins the hand if they both have Blackjack
 					difference--;
 					outcomeTotals[3]++;
+					totalsByAvg[idx]++;
 				} else {
 					outcomeTotals[5]++;
 				}
@@ -159,6 +180,7 @@ public class BlackjackSimulation {
 				// difference in games won will now reflect that
 				difference += 1.5;
 				outcomeTotals[7]++;
+				totalsByAvg[idx] += 1.5;
 			}
 
 			// Goes to the next game if Blackjack is found
@@ -222,6 +244,7 @@ public class BlackjackSimulation {
 							dealerFirst == 11 || dealerSecond == 11, cardsLeft, trueCardsLeft);
 					difference += split;
 					incArr(outcomeTotals, split);
+					totalsByAvg[idx] += split;
 
 					// The current simulation is ended, as the split method plays through the entire
 					// game
@@ -234,7 +257,7 @@ public class BlackjackSimulation {
 			// whether their hand busted, meaning its value went over 21. The hand has not yet doubled or
 			// busted, but it is doublable while there are only two cards in the player's hand.
 			boolean doubled = false;
-			boolean doublable = true;
+			boolean firstDraw = true;
 			boolean playerBusted = false;
 
 			// If the player total was set to 22 due to two aces being present and the hand
@@ -248,6 +271,7 @@ public class BlackjackSimulation {
 			if ((boolean) hitArray[4]) {
 				difference -= 0.5;
 				incArr(outcomeTotals, -0.5);
+				totalsByAvg[idx] -= 0.5;
 				continue;
 			}
 
@@ -256,8 +280,9 @@ public class BlackjackSimulation {
 			// does not hit.
 			do {
 				// If the hand is not doublable, meaning it has already been hit on, the hit
-				// array is again found with the updated player total.
-				if (!doublable) {
+				// array is again found with the updated player total, accounting for the player's 3rd/4th/
+				// etc. card
+				if (!firstDraw) {
 					// Stores the dealer's updated probabilities with the new cardsLeft array, as it has
 					// been altered with the player drawing another card, and the player still does not
 					// know the value of the dealer's second card
@@ -277,7 +302,7 @@ public class BlackjackSimulation {
 					removeElements(nextCard, cardsLeft);
 
 					// If the player should double and the hand is doublable
-					if (doublable && (boolean) hitArray[1]) {
+					if (firstDraw && (boolean) hitArray[1]) {
 						doubled = true;
 					}
 
@@ -317,7 +342,7 @@ public class BlackjackSimulation {
 				}
 
 				// After the first card, the player can no longer double
-				doublable = false;
+				firstDraw = false;
 
 				// The loop runs again if no reason has yet been found for the player not to hit
 				// again
@@ -403,6 +428,7 @@ public class BlackjackSimulation {
 			// The difference gets added to it the result of this game 
 			incArr(outcomeTotals, result); 
 			difference += result; 
+			totalsByAvg[idx] += result;
 
 			// How much time has elapsed, in milliseconds, since the program was initially 
 			// run. Used to 
@@ -415,8 +441,10 @@ public class BlackjackSimulation {
 		double winRate = ((games + difference) / 2) / games; 
 		double elapsedSeconds = (double)elapsedTime / 1000; 
 		
+		// printAvgToIdx(totalsByAvg, gamesByAvg);
+		
 		// Returns an object storing the information about the simulation 
-		return new SimulationResult(games, decks, outcomeTotals, elapsedSeconds, winRate);
+		return new SimulationResult(games, decks, outcomeTotals, elapsedSeconds, winRate, reshuffleRatio);
 
 
 	}
@@ -648,7 +676,7 @@ public class BlackjackSimulation {
 		int numCardsLeft = getSum(remainingCards);
 		 
 		// Gets a random number below the number of cards remaining
-		int randomInt = random.nextInt(0, numCardsLeft);
+		int randomInt = random.nextInt(numCardsLeft);
 		  
 
 		// Essentially translates the value of the random number into a value of a card
@@ -722,6 +750,24 @@ public class BlackjackSimulation {
 	 * simulated; this is called in every simulation only once the result has been determined. */
 	private static void incArr(int[] outcomeTotals, double result) {
 		outcomeTotals[resultToIdx.get(result)]++;
+	}
+	
+	private static int averageToIdx(int[] cardsLeft) {
+		int sum = getSum(cardsLeft);
+		int total = cardsLeft[0] * 10 + cardsLeft[1] * 11;
+		for (int i = 2; i < cardsLeft.length; i++) {
+			total += i * cardsLeft[i];
+		}
+		double average = (double)total / (double)sum;
+		return (int) Math.floor(average * 10);
+	}
+	
+	private static void printAvgToIdx(double[] totalByAvg, int[] gamesPlayed) {
+		for (int i = 0; i < totalByAvg.length; i++) {
+			double avg = (double) i / 10;
+			double avgPerGame = gamesPlayed[i] == 0 ? 0.0 : totalByAvg[i] / (double)gamesPlayed[i];
+			System.out.println(avg + " " + avgPerGame);
+		}
 	}
 
 
