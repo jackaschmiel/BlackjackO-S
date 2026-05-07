@@ -1,4 +1,4 @@
-package blackjackOS;
+package blackjackOandS;
 
 /* This class represents an object that stores information about a simulation of Blackjack games, played
  * using the optimization methods. */
@@ -11,11 +11,12 @@ public class SimulationResult {
 	double gamesPerSecond;
 	double winRate;
 	double houseEdge;
-	double playerEdge; 
+	double playerEdge;
+	double reshuffleRatio;
 	 
 	/* Constructor */
 	public SimulationResult(int games, int decks, int[] outcomeTotals, double secondsElapsed, 
-			double winRate) {
+			double winRate, double reshuffleRatio) {
 		this.games = games;
 		this.decks = decks;
 		// Gets the proportions of each outcome amount from the totals
@@ -25,6 +26,7 @@ public class SimulationResult {
 		this.gamesPerSecond = games / secondsElapsed;
 		this.houseEdge = (winRate - 0.5) * -2; // how "house edge" is defined in Blackjack
 		this.playerEdge = -this.houseEdge; // opposite of house edge
+		this.reshuffleRatio = reshuffleRatio;
 	}
 	
 	/* This finds the proportions of the games simulated that ended up in the player winning each of the 
@@ -54,7 +56,7 @@ public class SimulationResult {
 		System.out.printf("House edge: %.5f percent\n", houseEdge * 100);
 		System.out.printf("Player edge: %.5f percent\n", playerEdge * 100);
 		  
-		   
+		 
 		System.out.println("\nOutcome | Proportion");
 		System.out.printf("-4      | %.10f\n", outcomeProportions[0]);
 		System.out.printf("-3      | %.10f\n", outcomeProportions[1]);
@@ -68,6 +70,21 @@ public class SimulationResult {
 		System.out.printf("3       | %.10f\n", outcomeProportions[9]);
 		System.out.printf("4       | %.10f\n", outcomeProportions[10]);
 		
+	}
+	
+	public void printTime() {
+		System.out.println("Seconds elapsed: " + secondsElapsed);
+		System.out.println("Games played: " + games);
+		System.out.println("Games per second: " + gamesPerSecond);
+		
+		
+	}
+	
+	public void printWinRate() {
+		System.out.println("Games played: " + games);
+		System.out.println("Win rate: " + winRate);
+		System.out.println("Decks used: " + decks);
+		System.out.println("Reshuffle ratio: " + reshuffleRatio);
 	}
 	
 	
