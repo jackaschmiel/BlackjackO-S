@@ -1,4 +1,4 @@
-package blackjackOandS;
+package blackjackOS;
 
 /* This class represents an object that stores information about a simulation of Blackjack games, played
  * using the optimization methods. */
