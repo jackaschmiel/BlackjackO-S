@@ -1,4 +1,4 @@
-package blackjackOandS;
+package blackjackOS;
 
 import java.util.Map;
 
